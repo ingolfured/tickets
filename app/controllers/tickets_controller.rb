@@ -3,7 +3,23 @@ class TicketsController < ApplicationController
   # GET /tickets.json
 
   def customer
+    @ticket = Ticket.new
     render "customer"
+  end
+
+  # POST /tickets
+  # POST /tickets.json
+  def create
+    @ticket = Ticket.new(params[:ticket])
+    respond_to do |format|
+      if @ticket.save
+        flash[:notice] = "The ticket was successfully created"
+        format.html { redirect_to root_path, notice: 'Ticket was successfully created, our team will now take a look at it.' }
+      else
+        flash[:error] = "An error occurred"
+        format.html { render action: "customer" }
+      end
+    end
   end
 
   def index
@@ -42,21 +58,6 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find(params[:id])
   end
 
-  # POST /tickets
-  # POST /tickets.json
-  def create
-    @ticket = Ticket.new(params[:ticket])
-
-    respond_to do |format|
-      if @ticket.save
-        format.html { redirect_to @ticket, notice: 'Ticket was successfully created.' }
-        format.json { render json: @ticket, status: :created, location: @ticket }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @ticket.errors, status: :unprocessable_entity }
-      end
-    end
-  end
 
   # PUT /tickets/1
   # PUT /tickets/1.json

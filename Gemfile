@@ -44,3 +44,9 @@ gem 'therubyracer'
 gem 'haml'
 
 gem 'less-rails'
+
+gem 'annotate'
+
+gem 'byebug'
+
+gem 'validates_email_format_of'
