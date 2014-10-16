@@ -44,4 +44,5 @@ gem 'annotate'
 gem 'byebug'
 gem 'validates_email_format_of'
 gem 'devise'
-
+gem 'pundit'
+gem 'simple_form'

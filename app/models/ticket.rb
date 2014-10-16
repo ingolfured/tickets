@@ -16,7 +16,7 @@
 #
 
 class Ticket < ActiveRecord::Base
-  attr_accessible :customer_email, :customer_name, :department, :description, :subject, :reference
+  attr_accessible :customer_email, :customer_name, :department, :description, :subject, :reference, :status, :user_id, :response
   belongs_to :user
 
   def self.status
@@ -41,6 +41,17 @@ class Ticket < ActiveRecord::Base
       logger.error "No email sent, please give some arguments, empty strings"
     end
   end
+
+
+
+  def self.search(search)
+    if search
+      find(:all, :conditions => ['subject LIKE ? or reference LIKE ? or description LIKE ?', "%#{search}%", "%#{search}%", "%#{search}%"])
+    else
+      find(:all)
+    end
+  end
+
 
 
   validates :customer_name, presence: true

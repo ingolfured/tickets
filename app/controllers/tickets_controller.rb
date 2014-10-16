@@ -3,14 +3,21 @@ class TicketsController < ApplicationController
   # GET /tickets.json
 
   def customer
-    @ticket = Ticket.new
-    render "customer"
+    if current_user.nil?
+      @ticket = Ticket.new
+      render "customer"
+    else
+      redirect_to list_new_path
+    end
   end
 
   # POST /tickets
   # POST /tickets.json
   def create
     @ticket = Ticket.new(params[:ticket])
+    if params[:ticket][:user]
+      @ticket.user = current_user
+    end
     @ticket.url = request.original_url
     respond_to do |format|
       if @ticket.save
@@ -24,33 +31,14 @@ class TicketsController < ApplicationController
   end
 
   def index
-    @tickets = Ticket.all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @tickets }
-    end
+    @tickets = Ticket.search(params[:search])
+    authorize @tickets.first unless @tickets.first.nil?
   end
 
   # GET /tickets/1
   # GET /tickets/1.json
   def show
     @ticket = Ticket.find_by_reference(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-    end
-  end
-
-  # GET /tickets/new
-  # GET /tickets/new.json
-  def new
-    @ticket = Ticket.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @ticket }
-    end
   end
 
   # GET /tickets/1/edit
@@ -63,10 +51,22 @@ class TicketsController < ApplicationController
   # PUT /tickets/1.json
   def update
     @ticket = Ticket.find(params[:id])
+    if params[:ticket][:user_id][0]
+      @ticket.user = current_user
+    end
 
     respond_to do |format|
       if @ticket.update_attributes(params[:ticket])
-        format.html { redirect_to :back, notice: 'Ticket was successfully updated.' }
+        unless @ticket.response.nil?
+          begin
+            CustomerMailer.response_email(@ticket).deliver
+          rescue Net::SMTPAuthenticationError
+            logger.error "No email sent, please configure config/email.yml"
+          rescue ArgumentError
+            logger.error "No email sent, please give some arguments, empty strings"
+          end
+        end
+        format.html { redirect_to ticket_path(@ticket.reference), notice: 'Ticket was successfully updated.' }
       else
         format.html { render action: "edit" }
       end
@@ -77,11 +77,33 @@ class TicketsController < ApplicationController
   # DELETE /tickets/1.json
   def destroy
     @ticket = Ticket.find(params[:id])
+    authorize @ticket
     @ticket.destroy
 
     respond_to do |format|
       format.html { redirect_to tickets_url }
       format.json { head :no_content }
     end
+  end
+
+  def list_new
+    @tickets = Ticket.where("status = 'Waiting for Staff Response'")
+    authorize @tickets.first unless @tickets.first.nil?
+    render "index"
+  end
+  def list_open
+    @tickets = Ticket.all - Ticket.where(["status = '%s' or status = '%s'", "Cancelled", "Completed"])
+    authorize @tickets.first unless @tickets.first.nil?
+    render "index"
+  end
+  def list_onhold
+    @tickets = Ticket.where("status = 'On Hold'")
+    authorize @tickets.first unless @tickets.first.nil?
+    render "index"
+  end
+  def list_closed
+    @tickets = Ticket.where(["status = '%s' or status = '%s'", "Cancelled", "Completed"])
+    authorize @tickets.first unless @tickets.first.nil?
+    render "index"
   end
 end

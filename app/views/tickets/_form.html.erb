@@ -1,38 +1,15 @@
-<%= form_for @ticket, :html => { :class => 'form-horizontal' } do |f| %>
-  <div class="control-group">
-    <%= f.label :customer_name, "Name",:class => 'control-label'  %>
-    <div class="controls">
-      <%= f.text_field :customer_name, :class => 'text_field' %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= f.label :customer_email, "Email", :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :customer_email, :class => 'text_field' %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= f.label :department, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :department, :class => 'text_field' %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= f.label :subject, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_field :subject, :class => 'text_field' %>
-    </div>
-  </div>
-  <div class="control-group">
-    <%= f.label :description, :class => 'control-label' %>
-    <div class="controls">
-      <%= f.text_area :description, :class => 'text_area' %>
-    </div>
-  </div>
-
-  <div class="form-actions">
-    <%= f.submit nil, :class => 'btn btn-primary' %>
-    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
-                tickets_path, :class => 'btn' %>
-  </div>
+<%= simple_form_for @ticket do |f| %>
+  <%= f.input :customer_name %>
+  <%= f.input :customer_email %>
+  <%= f.input :department %>
+  <%= f.input :subject %>
+  <% if not current_user.nil?%>
+  <%= f.input :status, collection:Ticket.status, include_blank: false %>
+  <%= f.association :user, collection: [User.find(current_user.id)], label_method: :email, as: :check_boxes, label: "Assign yourself?"    %>
+  <% end %>
+  <%= f.input :description %>
+  <% if not current_user.nil?%>
+  <%= f.input :response %>
+  <% end %>
+  <%= f.button :submit %>
 <% end %>

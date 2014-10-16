@@ -10,21 +10,23 @@
       <th><%= model_class.human_attribute_name(:customer_email) %></th>
       <th><%= model_class.human_attribute_name(:department) %></th>
       <th><%= model_class.human_attribute_name(:subject) %></th>
-      <th><%= model_class.human_attribute_name(:description) %></th>
+      <th><%= model_class.human_attribute_name(:status) %></th>
       <th><%= model_class.human_attribute_name(:created_at) %></th>
+      <th><%= model_class.human_attribute_name(:user_id) %></th>
       <th><%=t '.actions', :default => t("helpers.actions") %></th>
     </tr>
   </thead>
   <tbody>
     <% @tickets.each do |ticket| %>
       <tr>
-        <td><%= link_to ticket.id, ticket_path(ticket) %></td>
-        <td><%= ticket.customer_name %></td>
+        <td><%= link_to ticket.id, ticket_path(ticket.reference) %></td>
+        <td><%= link_to ticket.customer_name, ticket_path(ticket.reference) %></td>
         <td><%= ticket.customer_email %></td>
         <td><%= ticket.department %></td>
         <td><%= ticket.subject %></td>
-        <td><%= ticket.description %></td>
-        <td><%=l ticket.created_at %></td>
+        <td><%= ticket.status %></td>
+        <td><%= ticket.created_at.strftime('%D-%R') %></td>
+        <td><%= User.find(ticket.user_id).email unless ticket.user_id.nil?  %></td>
         <td>
           <%= link_to t('.edit', :default => t("helpers.links.edit")),
                       edit_ticket_path(ticket), :class => 'btn btn-mini' %>
@@ -39,6 +41,3 @@
   </tbody>
 </table>
 
-<%= link_to t('.new', :default => t("helpers.links.new")),
-            new_ticket_path,
-            :class => 'btn btn-primary' %>

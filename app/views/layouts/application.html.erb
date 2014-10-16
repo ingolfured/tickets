@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+
+
+
+    <%= javascript_include_tag :defaults %>
+    <%= csrf_meta_tag %>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,10 +49,19 @@
      <div class='navbar-inner'>
         <div class='container-fluid'>
             <a class='brand'>Ticket Service</a>
-            <form class="navbar-search pull-right">
-                <input type="text" class="span2" placeholder="Login">
-                <input type="text" class="span2" placeholder="Password">
-                <input type="submit" value="Login" class="btn">
+  <ul class="nav nav-tabs" role="tablist">
+  <li class="<%= 'active' if params[:action] == 'list_new' %>"> <a href="<%= list_new_path%>">New</a> </li>
+  <li class="<%= 'active' if params[:action] == 'list_open' %>"> <a href="<%= list_open_path%>">Open</a> </li>
+  <li class="<%= 'active' if params[:action] == 'list_onhold' %>"> <a href="<%= list_onhold_path%>">On Hold</a> </li>
+  <li class="<%= 'active' if params[:action] == 'list_closed' %>"> <a href="<%= list_closed_path%>">Closed</a> </li>
+  </ul>
+            <form class="pull-right">
+              <% if user_signed_in? %>
+                Signed in as <%= current_user.email %>
+                <%= link_to "Sign out", destroy_user_session_path, method: :delete, class:"btn"%>
+              <% else %>
+                <%= link_to "Sign up", new_user_registration_path, class: "btn"%>  <%= link_to "Sign in", new_user_session_path, class:"btn" %>
+              <% end %>
             </form>
          </div>
       </div>
@@ -57,12 +72,16 @@
         <div class="row">
           <div class="span10">
             <%= bootstrap_flash %>
+    <%= form_tag tickets_path, :method => 'get' do %>
+        <%= text_field_tag :search, params[:search] %>
+        <%= submit_tag "Search", :name => nil, class:'btn-success' %>
+    <% end %>
             <%= yield %>
           </div>
         </div><!--/row-->
 
       <footer>
-        <p>&copy; Company 2014</p>
+        <p>&copy; Ingo 2014</p>
       </footer>
 
     </div> <!-- /container -->

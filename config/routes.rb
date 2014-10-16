@@ -4,6 +4,10 @@ Onapp::Application.routes.draw do
 
   root to: "tickets#customer"
   resources :tickets
+  get 'list_new', to: 'tickets#list_new'
+  get 'list_open', to: 'tickets#list_open'
+  get 'list_onhold', to: 'tickets#list_onhold'
+  get 'list_closed', to: 'tickets#list_closed'
 
 
 

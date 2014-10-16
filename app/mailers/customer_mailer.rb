@@ -10,4 +10,14 @@ class CustomerMailer < ActionMailer::Base
       @ticket.reference + " has been successfully created. You can access it here: " + @ticket.url
     )
   end
+
+  def response_email(ticket)
+    @ticket = ticket
+    mail(
+      to:  @ticket.customer_email,
+      from:      Rails.configuration.email[:name] + "<" + Rails.configuration.email[:email_address] + ">",
+      subject:  "Your response dear customer",
+      body:      "Dear " + @ticket.customer_name + "\n\n" + @ticket.response
+    )
+  end
 end
