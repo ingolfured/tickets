@@ -11,6 +11,7 @@ class TicketsController < ApplicationController
   # POST /tickets.json
   def create
     @ticket = Ticket.new(params[:ticket])
+    @ticket.url = request.original_url
     respond_to do |format|
       if @ticket.save
         flash[:notice] = "The ticket was successfully created"
@@ -34,11 +35,10 @@ class TicketsController < ApplicationController
   # GET /tickets/1
   # GET /tickets/1.json
   def show
-    @ticket = Ticket.find(params[:id])
+    @ticket = Ticket.find_by_reference(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @ticket }
     end
   end
 
@@ -66,11 +66,9 @@ class TicketsController < ApplicationController
 
     respond_to do |format|
       if @ticket.update_attributes(params[:ticket])
-        format.html { redirect_to @ticket, notice: 'Ticket was successfully updated.' }
-        format.json { head :no_content }
+        format.html { redirect_to :back, notice: 'Ticket was successfully updated.' }
       else
         format.html { render action: "edit" }
-        format.json { render json: @ticket.errors, status: :unprocessable_entity }
       end
     end
   end

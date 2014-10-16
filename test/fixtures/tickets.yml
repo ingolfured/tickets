@@ -10,7 +10,9 @@
 #  description    :text
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  reference      :string(255)
+#  reference      :
+#  status         :string(255)      default("Waiting for Staff Response")
+#  url            :string(255)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html

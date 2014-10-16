@@ -10,14 +10,27 @@
 #  description    :text
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  reference      :string(255)
+#  reference      :
+#  status         :string(255)      default("Waiting for Staff Response")
+#  url            :string(255)
 #
 
 class Ticket < ActiveRecord::Base
   attr_accessible :customer_email, :customer_name, :department, :description, :subject, :reference
+  belongs_to :user
+
+  def self.status
+    ["Waiting for Staff Response", "Waiting for Customer",
+                 "On Hold","Cancelled","Completed"]
+  end
+
 
   before_create :default_values
-  after_create :deliver_ticket_email
+  after_create :add_reference_to_url, :deliver_ticket_email
+
+  def add_reference_to_url
+    update_attribute(:url, self.url + "/" + self.reference )
+  end
 
   def deliver_ticket_email
     begin
@@ -32,6 +45,9 @@ class Ticket < ActiveRecord::Base
 
   validates :customer_name, presence: true
   validates_email_format_of :customer_email, :message => 'is not looking good'
+  validates :status, inclusion: { in: self.status,
+                                    message: "This is not a valid status" }
+  validates_uniqueness_of :reference
 
   private
     require 'securerandom'

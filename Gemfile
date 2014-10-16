@@ -36,17 +36,12 @@ gem 'bcrypt-ruby', '~> 3.0.0'
 
 # To use debugger
 gem 'debugger'
-
 gem 'twitter-bootstrap-rails'
-
 gem 'therubyracer'
-
 gem 'haml'
-
 gem 'less-rails'
-
 gem 'annotate'
-
 gem 'byebug'
-
 gem 'validates_email_format_of'
+gem 'devise'
+
