@@ -1,1 +1,13 @@
-This is a readme test
+This is a customer-ticket website where the customers can write a ticket and the users (employees) can read the tickets and
+give a proper answer in a email. The project is based on one controller, tickets_controller, while the models are two,
+tickets, and users. We use bootstrap to get a decent look, divese is used for authentication while pundit is use
+for authorization. Only the users can see all the tickets while the customers can see their tickets and file a new one.
+The only public users that know the reference id are the users and the one customer who got it. We think the id itself
+is good enough security for now. Otherwise we could easily add a new model customer and make the authenticate.
+
+The website sends emails both when the ticket is created and also when a user writes a response to the ticket. However,
+it is necessary to set the email.yml file in order to send actual emails.
+
+The relation between users and a ticket is that one user can have many tickets but a ticket belongs to a user.
+
+This website is fully funtional and responsive. However, we recommend development mode for now.
